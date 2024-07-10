@@ -2,6 +2,8 @@
 
 #include <vector>
 #include <string>
+#include <spdlog/spdlog.h>
+#include "lib/bot/bot.hpp"
 
 namespace lib
 {
@@ -20,6 +22,7 @@ namespace lib
     void remove(std::string username);
 
   public:
-    std::vector<int> bots;
+    std::vector<std::unique_ptr<Bot>> bots;
+    spdlog::logger logger;
   };
 }
