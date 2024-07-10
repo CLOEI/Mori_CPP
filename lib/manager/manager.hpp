@@ -3,26 +3,21 @@
 #include <vector>
 #include <string>
 #include <spdlog/spdlog.h>
-#include "lib/bot/bot.hpp"
+#include <memory>
+#include "bot/bot.hpp"
+#include "types/eLoginMethod.hpp"
 
-namespace lib
-{
-  enum eLoginMethod
-  {
-    APPLE_SIGNIN,
-    GOOGLE_SIGNIN,
-    LEGACY_SIGNIN,
-  };
+namespace lib {
+    class Manager {
+    public:
+        void add(std::string username, std::string password, types::eLoginMethod method);
 
-  class Manager
-  {
-  public:
-    void add(std::string username, std::string password, eLoginMethod method);
-    void get(std::string username);
-    void remove(std::string username);
+        Bot *get(std::string username);
 
-  public:
-    std::vector<std::unique_ptr<Bot>> bots;
-    spdlog::logger logger;
-  };
+        void remove(std::string username);
+
+    public:
+        std::vector<std::unique_ptr<Bot>> bots;
+        std::shared_ptr<spdlog::logger> logger;
+    };
 }

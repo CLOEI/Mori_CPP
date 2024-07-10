@@ -1,11 +1,11 @@
 #include <iostream>
-#include "lib/manager/manager.hpp"
+#include "manager/manager.hpp"
 
-using namespace lib::{Manager, eLoginMethod};
+using lib::Manager;
+using lib::types::eLoginMethod;
 
-int main()
-{
-  Manager manager{};
-  manager.add("peroperod", "", eLoginMethod::LEGACY_SIGNIN);
-  return 0;
+int main() {
+    Manager manager{};
+    manager.add("peroperod", "", eLoginMethod::LEGACY_SIGNIN);
+    return 0;
 }

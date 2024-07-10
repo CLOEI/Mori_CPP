@@ -2,24 +2,25 @@
 
 #include <string>
 #include <spdlog/spdlog.h>
-#include "lib/connect/connect.hpp"
+#include "connect/connect.hpp"
+#include "types/eLoginMethod.hpp"
 
-namespace lib
-{
-  class Bot : Connect
-  {
-  public:
-    Bot(const std::string &username, const std::string &password, eLoginMethod method, spdlog::logger &logger);
-    void disconnect();
+namespace lib {
+    class Bot : public Connect {
+    public:
+        Bot(const std::string &username, const std::string &password, types::eLoginMethod method,
+            std::shared_ptr<spdlog::logger> logger);
 
-  private:
-    void spoof();
+        void disconnect();
 
-  public:
-    bool is_ingame = false;
-    spdlog::logger &logger;
-    std::string &username;
-    std::string &password;
-    eLoginMethod method;
-  }
+    private:
+        void spoof();
+
+    public:
+        bool is_ingame = false;
+        std::shared_ptr<spdlog::logger> logger;
+        std::string username;
+        std::string password;
+        types::eLoginMethod method;
+    };
 }
