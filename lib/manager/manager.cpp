@@ -9,6 +9,11 @@ void Manager::add(std::string username, std::string password, types::eLoginMetho
     logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] %v");
 
     logger->info("Adding bot");
+    if (method != types::eLoginMethod::LEGACY_SIGNIN)
+    {
+        logger->error("Only legacy signin is supported for now");
+        return;
+    }
     bots.push_back(std::make_unique<Bot>(username, password, method, logger));
 }
 

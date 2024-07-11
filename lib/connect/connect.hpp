@@ -21,6 +21,7 @@ namespace lib
         std::string get_token_legacy(std::string &username, std::string &password);
         std::string get_token_google(std::string &username, std::string &password);
         std::string get_token_apple(std::string &username, std::string &password);
+        std::string get_legacy_form_token();
 
     public:
         std::unique_ptr<ENetHost> enet_host{nullptr};

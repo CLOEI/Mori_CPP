@@ -10,16 +10,18 @@ std::string lib::Connect::apple_login_url = "";
 
 std::string lib::Connect::get_token(std::string &username, std::string &password, types::eLoginMethod method)
 {
-    this->logger->info("Getting token");
     switch (method)
     {
     case types::eLoginMethod::LEGACY_SIGNIN:
+        this->logger->info("Getting legacy token");
         return this->get_token_legacy(username, password);
         break;
     case types::eLoginMethod::GOOGLE_SIGNIN:
+        this->logger->info("Getting google token");
         return this->get_token_google(username, password);
         break;
     case types::eLoginMethod::APPLE_SIGNIN:
+        this->logger->info("Getting apple token");
         return this->get_token_apple(username, password);
         break;
     }
@@ -28,17 +30,64 @@ std::string lib::Connect::get_token(std::string &username, std::string &password
 
 std::string lib::Connect::get_token_legacy(std::string &username, std::string &password)
 {
-    return "legacy";
+    assert(!legacy_login_url.empty());
+    std::string _token = this->get_legacy_form_token();
+    cpr::Url url{"https://login.growtopiagame.com/player/growid/login/validate"};
+    cpr::Response r = cpr::Post(url, cpr::Header{{"User-Agent", user_agent}, {"Referer", legacy_login_url}}, cpr::Body{fmt::format("_token={}&growId={}&password={}", _token, username, password)});
+
+    if (r.status_code == 200)
+    {
+        std::cout << r.text << std::endl;
+    }
+    else
+    {
+        if (strstr(r.text.c_str(), "Page Expired"))
+        {
+            logger->error("Auth failed: Page Expired");
+        }
+        else if (strstr(r.text.c_str(), "Bad Request"))
+        {
+            logger->error("Auth failed: Bad Request");
+        }
+        else if (strstr(r.text.c_str(), "Not Found"))
+        {
+            logger->error("Auth failed: Not Found");
+        }
+        else
+        {
+
+            std::cout << r.text << std::endl;
+            logger->error("Auth failed: Unknown error");
+        }
+    }
+    return "";
 }
 
 std::string lib::Connect::get_token_google(std::string &username, std::string &password)
 {
-    return "google";
+    return "";
 }
 
 std::string lib::Connect::get_token_apple(std::string &username, std::string &password)
 {
-    return "apple";
+    return "";
+}
+
+std::string lib::Connect::get_legacy_form_token()
+{
+    cpr::Url url{legacy_login_url};
+    cpr::Response r = cpr::Get(url, cpr::Header{{"User-Agent", user_agent}});
+    if (r.status_code == 200)
+    {
+        std::regex regex("name=\"_token\"\\s+type=\"hidden\"\\s+value=\"([^\"]*)\"");
+        std::smatch match;
+        std::string::const_iterator searchStart(r.text.cbegin());
+        if (std::regex_search(searchStart, r.text.cend(), match, regex))
+        {
+            return match.str(1);
+        }
+    }
+    return "";
 }
 
 void lib::Connect::get_oauth_link()
