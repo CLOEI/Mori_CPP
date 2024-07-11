@@ -4,6 +4,7 @@
 #include <memory>
 #include <spdlog/spdlog.h>
 #include "types/eLoginMethod.hpp"
+#include <cpr/cpr.h>
 
 namespace lib
 {
@@ -15,7 +16,7 @@ namespace lib
             this->logger = std::move(logger);
         }
         std::string get_token(std::string &username, std::string &password, types::eLoginMethod method);
-        static void get_oauth_link();
+        static int get_oauth_link();
 
     private:
         std::string get_token_legacy(std::string &username, std::string &password);
@@ -33,5 +34,6 @@ namespace lib
         static std::string legacy_login_url;
         static std::string google_login_url;
         static std::string apple_login_url;
+        static cpr::Session session;
     };
 }

@@ -7,6 +7,7 @@ std::string lib::Connect::user_agent = "Mozilla/5.0 (Windows NT 10.0; Win64; x64
 std::string lib::Connect::legacy_login_url = "";
 std::string lib::Connect::google_login_url = "";
 std::string lib::Connect::apple_login_url = "";
+cpr::Session lib::Connect::session;
 
 std::string lib::Connect::get_token(std::string &username, std::string &password, types::eLoginMethod method)
 {
@@ -32,8 +33,10 @@ std::string lib::Connect::get_token_legacy(std::string &username, std::string &p
 {
     assert(!legacy_login_url.empty());
     std::string _token = this->get_legacy_form_token();
-    cpr::Url url{"https://login.growtopiagame.com/player/growid/login/validate"};
-    cpr::Response r = cpr::Post(url, cpr::Header{{"User-Agent", user_agent}, {"Referer", legacy_login_url}}, cpr::Body{fmt::format("_token={}&growId={}&password={}", _token, username, password)});
+    session.SetUrl(cpr::Url{"https://login.growtopiagame.com/player/growid/login/validate"});
+    session.SetHeader(cpr::Header{{"User-Agent", user_agent}, {"Referer", legacy_login_url}});
+    session.SetBody(cpr::Body{fmt::format("_token={}&growId={}&password={}", _token, username, password)});
+    cpr::Response r = session.Post();
 
     if (r.status_code == 200)
     {
@@ -75,8 +78,8 @@ std::string lib::Connect::get_token_apple(std::string &username, std::string &pa
 
 std::string lib::Connect::get_legacy_form_token()
 {
-    cpr::Url url{legacy_login_url};
-    cpr::Response r = cpr::Get(url, cpr::Header{{"User-Agent", user_agent}});
+    session.SetUrl(cpr::Url{legacy_login_url});
+    cpr::Response r = session.Get();
     if (r.status_code == 200)
     {
         std::regex regex("name=\"_token\"\\s+type=\"hidden\"\\s+value=\"([^\"]*)\"");
@@ -90,12 +93,15 @@ std::string lib::Connect::get_legacy_form_token()
     return "";
 }
 
-void lib::Connect::get_oauth_link()
+int lib::Connect::get_oauth_link()
 {
     assert(!user_agent.empty());
+
     std::regex regex("https:\\/\\/login\\.growtopiagame\\.com\\/(apple|google|player\\/growid)\\/(login|redirect)\\?token=[^\"]+");
-    cpr::Url url{"https://login.growtopiagame.com/player/login/dashboard"};
-    cpr::Response r = cpr::Post(url, cpr::Header{{"User-Agent", user_agent}}, cpr::Body{"requestedName|BraveDuck"});
+    session.SetHeader(cpr::Header{{"User-Agent", user_agent}});
+    session.SetUrl(cpr::Url{"https://login.growtopiagame.com/player/login/dashboard"});
+    session.SetBody(cpr::Body{"requestedName|BraveDuck"});
+    cpr::Response r = session.Post();
 
     if (r.status_code == 200)
     {
@@ -118,7 +124,12 @@ void lib::Connect::get_oauth_link()
         }
         else
         {
-            spdlog::error("Failed to get oauth tokens");
+            return -1;
         }
     }
+    else
+    {
+        return -1;
+    }
+    return 0;
 }

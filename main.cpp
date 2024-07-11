@@ -8,7 +8,11 @@ using lib::types::eLoginMethod;
 int main()
 {
     spdlog::info("Getting oauth links");
-    Connect::get_oauth_link();
+    if (Connect::get_oauth_link() != 0)
+    {
+        spdlog::error("Failed to get oauth links");
+        return 1;
+    }
     Manager manager{};
     manager.add("peroperod", "", eLoginMethod::LEGACY_SIGNIN);
     return 0;
