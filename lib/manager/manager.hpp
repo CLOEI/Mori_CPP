@@ -7,8 +7,10 @@
 #include "bot/bot.hpp"
 #include "types/eLoginMethod.hpp"
 
-namespace lib {
-    class Manager {
+namespace lib
+{
+    class Manager
+    {
     public:
         void add(std::string username, std::string password, types::eLoginMethod method);
 
