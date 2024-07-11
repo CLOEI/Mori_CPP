@@ -14,11 +14,13 @@ namespace lib
             std::shared_ptr<spdlog::logger> logger);
 
         void disconnect();
+        void start_event();
 
     private:
         void spoof();
 
     public:
+        bool is_running = false;
         bool is_ingame = false;
         std::shared_ptr<spdlog::logger> logger;
         std::string username;

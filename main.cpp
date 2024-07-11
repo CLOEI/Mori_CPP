@@ -14,6 +14,6 @@ int main()
         return 1;
     }
     Manager manager{};
-    manager.add("peroperod", "", eLoginMethod::LEGACY_SIGNIN);
+    manager.add("Peroperod", "", eLoginMethod::LEGACY_SIGNIN);
     return 0;
 }

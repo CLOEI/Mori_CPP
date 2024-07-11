@@ -5,6 +5,7 @@ using namespace lib;
 
 void Manager::add(std::string username, std::string password, types::eLoginMethod method)
 {
+    assert(!password.empty() && !username.empty());
     this->logger = spdlog::stdout_color_mt(username);
     logger->set_pattern("[%Y-%m-%d %H:%M:%S.%e] [%n] [%^%l%$] %v");
 
